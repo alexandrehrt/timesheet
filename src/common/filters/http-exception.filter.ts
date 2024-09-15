@@ -2,6 +2,7 @@ import {
   ArgumentsHost,
   BadRequestException,
   Catch,
+  ConflictException,
   ExceptionFilter,
   HttpException,
 } from '@nestjs/common';
@@ -15,7 +16,10 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    if (exception instanceof BadRequestException) {
+    if (
+      exception instanceof BadRequestException ||
+      exception instanceof ConflictException
+    ) {
       const exceptionResponse = exception.getResponse() as any;
       const validationMessages = exceptionResponse.message;
 

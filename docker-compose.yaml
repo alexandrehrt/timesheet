@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  timesheet-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: alexht/timesheet-ap
+    container_name: timesheet-api
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+    volumes:
+      - ./src:/app
+    networks:
+      - timesheet-network
+
+  timesheet-database:
+    image: postgres:latest
+    container_name: timesheet-database
+    restart: always
+    tty: true
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=timesheet
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - timesheet-network
+
+volumes:
+  pg-data:
+    driver: local
+
+networks:
+  timesheet-network:
+    driver: bridge

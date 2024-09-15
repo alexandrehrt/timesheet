@@ -9,7 +9,9 @@ export class BatidasController {
 
   @Post()
   @UseFilters(new HttpExceptionFilter())
-  create(@Body() createBatidaDto: CreateBatidaDto) {
+  create(
+    @Body() createBatidaDto: CreateBatidaDto,
+  ): Promise<{ dia: string; pontos: string[] }> {
     return this.createBatidaUseCase.execute(createBatidaDto);
   }
 }
