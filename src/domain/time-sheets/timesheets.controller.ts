@@ -1,15 +1,13 @@
-import { Controller, Get, Param, UseFilters } from '@nestjs/common';
-import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
-import { GetTimesByDateDto } from './dto/get-times-by-date.dto';
-import { GetTimesByDateUseCase } from './get-times-by-date.usecase';
+import { Controller, Get, Param } from '@nestjs/common';
+import { ReportDto } from './dto/report.dto';
+import { ReportUseCase } from './report.usecase';
 
 @Controller('folhas-de-ponto')
 export class TimeSheetsController {
-  constructor(private readonly getTimesByDateUseCase: GetTimesByDateUseCase) {}
+  constructor(private readonly reportUseCase: ReportUseCase) {}
 
   @Get(':anoMes')
-  @UseFilters(new HttpExceptionFilter())
-  getTimesheet(@Param('anoMes') anoMes: string): Promise<GetTimesByDateDto> {
-    return this.getTimesByDateUseCase.execute(anoMes);
+  getTimesheet(@Param('anoMes') anoMes: string): Promise<ReportDto> {
+    return this.reportUseCase.execute(anoMes);
   }
 }
