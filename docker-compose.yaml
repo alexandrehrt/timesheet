@@ -1,41 +1,47 @@
-version: '3.8'
-
 services:
-  timesheet-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # image: alexht/timesheet-ap
-    container_name: timesheet-api
-    ports:
-      - '3000:3000'
-    environment:
-      - PORT=3000
-    volumes:
-      - ./src:/app
-    networks:
-      - timesheet-network
-
-  timesheet-database:
-    image: postgres:latest
-    container_name: timesheet-database
+  timesheet_db:
+    image: postgres
+    container_name: timesheet_db
     restart: always
-    tty: true
     ports:
-      - '5432:5432'
+      - 5432:5432
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=timesheet
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - timesheet-network
+      - pgdata:/data/postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  timesheet_app:
+    build: .
+    container_name: timesheet_app
+    ports:
+      - 3000:3000
+    environment:
+      - DB_TYPE=postgres
+      - DB_HOST=timesheet_db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=timesheet
+    volumes:
+      - .:/app
+    depends_on:
+      timesheet_db:
+        condition: service_healthy
+    command: sh -c "npm run start:dev"
+
+  wait_for_db:
+    image: atkrad/wait4x
+    depends_on:
+      - timesheet_db
+    command: tcp timesheet_db:5432 -t 30s -i 250ms
 
 volumes:
-  pg-data:
+  pgdata:
     driver: local
-
-networks:
-  timesheet-network:
-    driver: bridge
