@@ -1,5 +1,4 @@
-import { Body, Controller, Post, UseFilters } from '@nestjs/common';
-import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { Body, Controller, Post } from '@nestjs/common';
 import { CreateBatidaUseCase } from './create-batida.usecase';
 import { CreateBatidaDto } from './dto/create-batida.dto';
 
@@ -8,7 +7,6 @@ export class BatidasController {
   constructor(private readonly createBatidaUseCase: CreateBatidaUseCase) {}
 
   @Post()
-  @UseFilters(new HttpExceptionFilter())
   create(
     @Body() createBatidaDto: CreateBatidaDto,
   ): Promise<{ dia: string; pontos: string[] }> {
