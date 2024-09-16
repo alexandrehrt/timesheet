@@ -34,7 +34,6 @@ services:
     depends_on:
       timesheet_db:
         condition: service_healthy
-    command: sh -c "npm run start:dev"
 
   wait_for_db:
     image: atkrad/wait4x
